@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package envoy.extensions.transport_sockets.tls.v4alpha;
+
+import "envoy/config/core/v4alpha/config_source.proto";
+
+import "google/protobuf/duration.proto";
+
+import "udpa/annotations/status.proto";
+import "udpa/annotations/versioning.proto";
+
+option java_package = "io.envoyproxy.envoy.extensions.transport_sockets.tls.v4alpha";
+option java_outer_classname = "MeshcaProto";
+option java_multiple_files = true;
+option (udpa.annotations.file_status).package_version_status = NEXT_MAJOR_VERSION_CANDIDATE;
+
+// [#protodoc-title: GoogleMeshCA Configuration]
+// GoogleMeshCaConfig contains all configuration parameters required by the
+// MeshCA CertificateProvider plugin implementation.
+// [#next-free-field: 7]
+message GoogleMeshCaConfig {
+  option (udpa.annotations.versioning).previous_message_type =
+      "envoy.extensions.transport_sockets.tls.v3.GoogleMeshCaConfig";
+
+  // Type of key to be embedded in CSRs sent to the MeshCA.
+  enum KeyType {
+    KEY_TYPE_UNKNOWN = 0;
+    KEY_TYPE_RSA = 1;
+  }
+
+  // GoogleMeshCA server endpoint to get CSRs signed via the *CreateCertificate*
+  // unary call. This must have :ref:`api_type
+  // <envoy_api_field_config.core.v4alpha.ApiConfigSource.api_type>` :ref:`GRPC
+  // <envoy_api_enum_value_config.core.v4alpha.ApiConfigSource.ApiType.GRPC>`.
+  // STS based call credentials need to be supplied in :ref:`call_credentials
+  // <envoy_api_field_config.core.v4alpha.GrpcService.GoogleGrpc.call_credentials>`.
+  // If :ref:`timeout envoy_api_field_config.core.v3.GrpcService.timeout` is
+  // left unspecified, a default value of 10s will be used.
+  config.core.v4alpha.ApiConfigSource server = 1;
+
+  // Certificate lifetime to request in CSRs sent to the MeshCA.
+  // A default value of 24h will be used if left unspecified.
+  google.protobuf.Duration certificate_lifetime = 2;
+
+  // How long before certificate expiration to renew the certificate.
+  // A default value of 12h will be used if left unspecified.
+  google.protobuf.Duration renewal_grace_period = 3;
+
+  // Type of key.
+  // RSA keys will be used if left unspecified.
+  KeyType key_type = 4;
+
+  // Size of the key in bits.
+  // 2048 bit keys will be used if left unspecified.
+  uint32 key_size = 5;
+
+  // GCE zone where the workload is located.
+  // GCE/GKE Metadata Server will be contacted if left unspecified.
+  string gce_compute_zone = 6;
+}
